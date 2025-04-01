@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Beetle } from '../entities/Beetle';
+import { Ground } from '../entities/Ground';
 import { DungBall } from '../entities/DungBall';
 import { TerrainManager } from '../terrain/TerrainManager';
 import { PhysicsWorld } from '../physics/PhysicsWorld';
@@ -40,33 +41,16 @@ export class Game {
             // Add directional light
             const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
             directionalLight.position.set(5, 5, 5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 1024;
+            directionalLight.shadow.mapSize.height = 1024;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 50;
+            directionalLight.shadow.camera.left = -10;
+            directionalLight.shadow.camera.right = 10;
+            directionalLight.shadow.camera.top = 10;
+            directionalLight.shadow.camera.bottom = -10;
             this.scene.add(directionalLight);
-            
-            // Add a ground plane
-            const groundGeometry = new THREE.PlaneGeometry(20, 20);
-            const groundMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x808080,
-                side: THREE.DoubleSide
-            });
-            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-            ground.rotation.x = -Math.PI / 2;
-            ground.position.y = -2;
-            this.scene.add(ground);
-            
-            // Add some test cubes
-            const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-            const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-            
-            // Add a few cubes at different positions
-            for (let i = 0; i < 5; i++) {
-                const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-                cube.position.set(
-                    (Math.random() - 0.5) * 10,
-                    0.5,
-                    (Math.random() - 0.5) * 10
-                );
-                this.scene.add(cube);
-            }
             
             // Set up renderer
             console.log('Setting up renderer...');
@@ -108,8 +92,16 @@ export class Game {
             this.controls.enableDamping = true;
             this.controls.dampingFactor = 0.05;
             
+            // Create ground
+            this.ground = new Ground(this.scene, this.physicsWorld);
+            
+            // Create beetle
+            this.beetle = new Beetle(this.scene, this.physicsWorld);
+            
             // Set up event listeners
             window.addEventListener('resize', this.onWindowResize.bind(this));
+            window.addEventListener('keydown', this.handleKeyDown.bind(this));
+            window.addEventListener('keyup', this.handleKeyUp.bind(this));
             
             // Start game loop
             this.animate();
@@ -131,41 +123,92 @@ export class Game {
     }
 
     /**
+     * Handle key down events
+     * @param {KeyboardEvent} event - The key down event
+     */
+    handleKeyDown(event) {
+        if (!this.beetle) return;
+        
+        const direction = new THREE.Vector3();
+        
+        switch(event.code) {
+            case 'KeyW':
+                direction.z -= 1;
+                break;
+            case 'KeyS':
+                direction.z += 1;
+                break;
+            case 'KeyA':
+                direction.x -= 1;
+                break;
+            case 'KeyD':
+                direction.x += 1;
+                break;
+        }
+        
+        if (direction.length() > 0) {
+            this.beetle.move(direction);
+            this.beetle.rotateTo(direction);
+        }
+    }
+
+    /**
+     * Handle key up events
+     * @param {KeyboardEvent} event - The key up event
+     */
+    handleKeyUp(event) {
+        if (!this.beetle) return;
+        
+        switch(event.code) {
+            case 'KeyW':
+            case 'KeyS':
+            case 'KeyA':
+            case 'KeyD':
+                this.beetle.stop();
+                break;
+        }
+    }
+
+    /**
      * Game loop
      */
     animate() {
         requestAnimationFrame(this.animate.bind(this));
         
+        // Update physics
+        this.physicsWorld.update();
+        
+        // Update beetle
+        if (this.beetle) {
+            this.beetle.update();
+        }
+        
         // Update controls
         this.controls.update();
-        
-        // Update physics
-        if (this.physicsWorld) {
-            this.physicsWorld.update();
-        }
         
         // Render scene
         this.renderer.render(this.scene, this.camera);
     }
 
     /**
-     * Clean up game resources
+     * Clean up resources
      */
     dispose() {
+        window.removeEventListener('resize', this.onWindowResize);
+        window.removeEventListener('keydown', this.handleKeyDown);
+        window.removeEventListener('keyup', this.handleKeyUp);
+        
+        if (this.beetle) {
+            this.beetle.dispose();
+        }
+        
+        if (this.ground) {
+            this.ground.dispose();
+        }
+        
         if (this.physicsWorld) {
             this.physicsWorld.dispose();
         }
-        
-        // Remove event listeners
-        window.removeEventListener('resize', this.onWindowResize.bind(this));
-        
-        // Dispose of Three.js resources
-        this.scene.traverse((object) => {
-            if (object instanceof THREE.Mesh) {
-                object.geometry.dispose();
-                object.material.dispose();
-            }
-        });
         
         this.renderer.dispose();
     }
