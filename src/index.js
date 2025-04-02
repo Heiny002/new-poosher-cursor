@@ -10,23 +10,19 @@ const ballSizeDisplay = document.getElementById('ball-size');
 
 // Create debug panel
 const debugPanel = document.createElement('div');
-debugPanel.style.cssText = `
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    background: rgba(0, 0, 0, 0.8);
-    color: #00ff00;
-    padding: 10px;
-    font-family: monospace;
-    font-size: 12px;
-    max-width: 300px;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 1000;
-`;
+debugPanel.style.position = 'fixed';
+debugPanel.style.top = '10px';
+debugPanel.style.left = '10px';
+debugPanel.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+debugPanel.style.color = 'white';
+debugPanel.style.padding = '10px';
+debugPanel.style.fontFamily = 'monospace';
+debugPanel.style.maxHeight = '200px';
+debugPanel.style.overflow = 'auto';
+debugPanel.style.zIndex = '1000';
 document.body.appendChild(debugPanel);
 
-// Debug logging function
+// Function to log messages with timestamp
 function debugLog(message) {
     const timestamp = new Date().toLocaleTimeString();
     const logMessage = `[${timestamp}] ${message}`;
@@ -38,34 +34,69 @@ function debugLog(message) {
     debugPanel.scrollTop = debugPanel.scrollHeight;
 }
 
-// Update loading progress
+// Function to update loading progress
 function updateLoadingProgress(progress) {
     loadingProgress.style.width = `${progress}%`;
     debugLog(`Loading progress: ${progress}%`);
 }
 
-// Initialize game
+// Initialize the game
 async function initGame() {
     try {
         debugLog('Creating game instance...');
         updateLoadingProgress(20);
-        
-        const game = new Game();
+
+        // Create renderer
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x87CEEB); // Sky blue background
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
         updateLoadingProgress(40);
+
+        // Create camera
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+        camera.position.set(0, 10, 20);
+        camera.lookAt(0, 0, 0);
+
+        // Create controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 5;
+        controls.maxDistance = 50;
+
+        updateLoadingProgress(60);
+
+        // Create game instance
+        const game = new Game(renderer, camera, controls);
         
-        // Wait for game initialization to complete
-        await game.waitForInit();
+        // Initialize game
+        debugLog('Initializing game...');
+        await game.init();
+        
         updateLoadingProgress(100);
-        
-        // Remove loading screen with fade out
-        loadingScreen.style.transition = 'opacity 0.5s ease';
-        loadingScreen.style.opacity = '0';
-        
-        // Wait for fade out animation to complete before removing
-        await new Promise(resolve => setTimeout(resolve, 500));
-        loadingScreen.style.display = 'none';
-        
         debugLog('Game initialized successfully!');
+
+        // Store game instance globally for resize handler
+        window.game = game;
+
+        // Remove loading screen with fade out
+        if (loadingScreen) {
+            loadingScreen.style.transition = 'opacity 0.5s ease';
+            loadingScreen.style.opacity = '0';
+            
+            // Wait for fade out animation to complete before removing
+            await new Promise(resolve => setTimeout(resolve, 500));
+            loadingScreen.style.display = 'none';
+        }
 
         // Update UI with ball size
         game.onBallSizeChange = (size) => {
@@ -77,32 +108,31 @@ async function initGame() {
     } catch (error) {
         console.error('Failed to initialize game:', error);
         debugLog(`Error: ${error.message}`);
-        debugLog(`Stack: ${error.stack}`);
         
-        // Update loading screen with error
-        const loadingText = loadingScreen.querySelector('.loading-text');
-        loadingText.textContent = 'Error loading game';
-        loadingText.style.color = '#ff0000';
-        loadingProgress.style.background = '#ff0000';
-        loadingProgress.style.width = '100%';
-        
-        // Add retry button
+        // Create retry button
         const retryButton = document.createElement('button');
         retryButton.textContent = 'Retry';
-        retryButton.style.cssText = `
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        `;
-        retryButton.onclick = () => window.location.reload();
-        loadingScreen.appendChild(retryButton);
+        retryButton.style.position = 'fixed';
+        retryButton.style.top = '50%';
+        retryButton.style.left = '50%';
+        retryButton.style.transform = 'translate(-50%, -50%)';
+        retryButton.style.padding = '10px 20px';
+        retryButton.style.fontSize = '16px';
+        retryButton.style.cursor = 'pointer';
+        retryButton.onclick = () => {
+            document.body.removeChild(retryButton);
+            initGame();
+        };
+        document.body.appendChild(retryButton);
     }
 }
 
-// Start initialization
+// Handle window resize
+window.addEventListener('resize', () => {
+    if (window.game) {
+        window.game.onWindowResize();
+    }
+});
+
+// Start the game
 initGame(); 

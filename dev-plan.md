@@ -1,153 +1,95 @@
-# Dung Beetle Simulator - Development Plan
+# Physics Adventure - Development Plan
 
 ## Game Overview
-A 3D web game built with ThreeJS where players control a dung beetle pushing a ball of dung across various terrains. As the player progresses north, the map expands east and west, revealing new ecosystems and challenges.
+A 3D web game built with ThreeJS featuring procedurally generated terrain and dynamic physics interactions.
 
 ## Core Game Mechanics
-- Beetle pushes a ball of dung that grows when rolling over collectible bits
-- Obstacles can damage or destroy the ball
-- Beetle is 90% attached to the ball but can be detached if the ball rolls too fast
-- The terrain expands as the player moves north, with the map widening east-west
+- Procedurally generated terrain with realistic height variation
+- Physics-based movement and interactions
+- Dynamic lighting and shadows
 - Different ecosystems appear as player progresses (grassland, forest, desert, snow)
 - Terrain features include hills, cliffs, water bodies, stones, animals, plants
 - Objects and animals increase in size as player progresses north
-- Beetle can be upgraded by sacrificing ball size
 
 ## Implementation Plan
 
 ### Phase 1: Basic Prototype
 1. **Physics Engine Integration**
    - Integrate Ammo.js or Cannon.js for reliable physics
-   - Create custom physics for ball rolling, growth, and destruction
+   - Create custom physics for movement and interactions
    - Implement terrain collision detection
 
 2. **Basic Movement & Controls**
    - WASD/Arrow keys for movement
    - Forward/Backward controls for acceleration/deceleration
-   - Left/Right for orbiting beetle around the ball
-   - Camera follows beetle with elastic delay
-   - Zoom based on ball size
+   - Left/Right for rotation
+   - Camera follows player with elastic delay
 
 3. **Core Elements**
    - Simple terrain generation with hills
-   - Basic beetle model and ball
-   - Implement attachment mechanics between beetle and ball
+   - Basic player model
    - Create camera system with follow behavior
 
 ### Phase 2: Core Gameplay
-1. **Ball Mechanics**
-   - Realistic rolling physics with momentum and inertia
-   - Growth mechanism when collecting resources
-   - Breaking/damage system when hitting obstacles
-   - "Too fast" detection for beetle detachment
-   - Generate plant growth from decomposing dung pieces
-
-2. **Terrain System**
+1. **Terrain System**
    - Procedural terrain generation
-   - Triangular shape expanding north
-   - Chunk loading/unloading system
-   - Height map generation with Perlin noise
-   - Basic obstacles and collectibles placement
+   - Different ecosystem types
+   - Dynamic terrain features
+   - Resource collection system
 
-3. **Game State & UI**
-   - Stats display (timer, ball diameter, weight, distances)
-   - Beetle cam implementation
-   - Achievement notifications
-   - Save/load functionality
+2. **Visual Effects**
+   - Dynamic lighting and shadows
+   - Particle effects
+   - Weather system
+   - Day/night cycle
 
-### Phase 3: World Building
-1. **Ecosystem Development**
-   - Create different terrain types (grassland, forest, desert, snow)
-   - Custom physics for each terrain type (mud, water, sand, snow)
-   - Transition zones between ecosystems
-   - Unique obstacles and collectibles per ecosystem
-   - Place signposts indicating ecosystem changes
+3. **Game Progression**
+   - Level system
+   - Achievement system
+   - Resource management
+   - Upgrade system
 
-2. **Object Generation**
-   - Place trees, rocks, bushes based on ecosystem
-   - Generate animals with appropriate behaviors
-   - Create water bodies (small and large)
-   - Add ambient elements (birds, clouds, insects)
-   - Scale object sizes based on northern distance
+### Phase 3: Polish
+1. **Visual Polish**
+   - High-quality models and textures
+   - Animation system
+   - Visual effects
+   - UI/UX improvements
 
-3. **Difficulty Progression**
-   - Increase challenge as player moves north
-   - Gradually introduce more dangerous obstacles
-   - Adjust terrain to be more difficult (more cliffs, ravines)
-   - Scale obstacle frequency with distance traveled
-   - Add special challenges (weather effects, swarms of flies)
+2. **Audio**
+   - Background music
+   - Sound effects
+   - Ambient sounds
+   - Dynamic audio system
 
-### Phase 4: Polish & Features
-1. **Visual Enhancements**
-   - Particle effects for impacts, water, etc.
-   - Dynamic lighting system
-   - More detailed models for beetle and terrain elements
-   - Visual feedback for ball damage/growth
-   - Weather effects (optional)
+3. **Performance**
+   - Optimization
+   - LOD system
+   - Asset streaming
+   - Memory management
 
-2. **Audio System**
-   - Background music per ecosystem
-   - Sound effects for:
-     - Ball rolling on different surfaces
-     - Beetle movement
-     - Collisions and impacts
-     - Growth and achievements
-     - Ambient sounds (birds, wind, insects)
-   - Sound toggles for music and effects
+## Technical Requirements
 
-3. **Beetle Upgrade System**
-   - Different beetle types/colors based on upgrades
-   - Stats upgrade menu
-   - Visual changes when upgrading
-   - Trade-off system for sacrificing ball size
+### Core Technologies
+- Three.js for 3D graphics
+- Ammo.js for physics simulation
+- Vite for development and building
 
-4. **Mobile Support**
-   - Touch controls
-   - Floating, movable joystick
-   - Performance optimizations for mobile
-   - Responsive UI design
+### Development Tools
+- Git for version control
+- ESLint for code quality
+- Jest for testing
+- Webpack for bundling
 
-## Technical Considerations
+### Performance Targets
+- 60 FPS on modern browsers
+- < 500MB memory usage
+- < 2s initial load time
+- Smooth terrain generation
 
-### Performance Optimization
-- Use instanced meshes for repeated objects (trees, rocks, etc.)
-- Implement LOD (Level of Detail) system for distant objects
-- Use occlusion culling to avoid rendering objects not in view
-- Implement terrain chunking and progressive loading
-- Optimize physics calculations for large worlds
-
-### Physics Challenges
-- Custom rolling physics for different terrain types
-- Ball deformation on impact (or keep it simple with size changes)
-- Beetle-to-ball connection needs to be stable yet breakable
-- Handling large size differences between ball and beetle
-- Preventing physics glitches at high speeds
-
-### Browser Compatibility
-- ThreeJS works on most modern browsers
-- Consider polyfills for older browsers
-- Test on different devices and browsers
-- Handle different screen sizes and aspect ratios
-
-## Next Steps
-
-1. **Create a simple prototype with:**
-   - Basic terrain
-   - Controllable beetle
-   - Rolling ball with physics
-   - Camera controls
-
-2. **Test core gameplay mechanics:**
-   - Ball growth/shrinkage
-   - Beetle-ball interaction
-   - Physics of different surfaces
-
-3. **Set up a development environment:**
-   - Version control
-   - Asset pipeline
-   - Testing framework
-
-4. **Prioritize features for incremental development:**
-   - Focus on making the core gameplay loop fun first
-   - Add features incrementally
-   - Test frequently with users for feedback
+## Future Enhancements
+1. Multiplayer support
+2. VR/AR integration
+3. Mobile optimization
+4. Mod support
+5. Custom level editor

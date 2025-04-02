@@ -1,13 +1,11 @@
-# Poosher - A Dung Beetle Adventure
+# Poosher - A Physics Adventure
 
-A physics-based game where you control a dung beetle pushing and growing a ball of dung through a procedurally generated terrain.
+A physics-based game with procedurally generated terrain and dynamic interactions.
 
 ## Features
 
 - Procedurally generated terrain with realistic height variation
 - Physics-based movement and interactions
-- Growing dung ball that can be damaged
-- WASD controls for beetle movement
 - Dynamic lighting and shadows
 
 ## Getting Started
@@ -37,13 +35,6 @@ npm start
 
 4. Open your browser and navigate to `http://localhost:5173`
 
-## Controls
-
-- W: Move forward
-- S: Move backward
-- A: Move left
-- D: Move right
-
 ## Development
 
 The project uses:
@@ -56,7 +47,7 @@ The project uses:
 ```
 /src
   /core        # Core game engine classes
-  /entities    # Game entities (beetle, ball)
+  /entities    # Game entities
   /terrain     # Terrain generation
   /physics     # Physics systems
 ```

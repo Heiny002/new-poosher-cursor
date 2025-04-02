@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poosher - A Dung Beetle Adventure</title>
+    <title>Poosher - A Physics Adventure</title>
     <style>
         body {
             margin: 0;
@@ -58,27 +58,6 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             z-index: 100;
         }
-        .controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
-            padding: 15px 25px;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 14px;
-            text-align: center;
-            z-index: 100;
-        }
-        .key {
-            display: inline-block;
-            background: rgba(255,255,255,0.1);
-            padding: 5px 10px;
-            margin: 0 5px;
-            border-radius: 5px;
-            font-family: monospace;
-        }
     </style>
 </head>
 <body>
@@ -89,10 +68,7 @@
         </div>
     </div>
     <div id="game-ui">
-        Ball Size: <span id="ball-size">0.5</span>
-    </div>
-    <div class="controls">
-        <span class="key">W</span> <span class="key">A</span> <span class="key">S</span> <span class="key">D</span> to move
+        <span id="ball-size">0.5</span>
     </div>
     <script type="module" src="/src/index.js"></script>
 </body>
